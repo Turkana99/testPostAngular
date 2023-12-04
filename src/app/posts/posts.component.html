@@ -1,0 +1,42 @@
+<div class="container col-lg-12 pt-4">
+  <div class="wrapper">
+    <div class="mainContent row">
+      <div
+        class="col-lg-4 post"
+        *ngFor="let item of displayPosts; index as i"
+        (click)="openDialog(item.id)"
+      >
+        <p>{{ getItemIndex(item) }}</p>
+        <div class="wh-color post-content px-2 pt-3">
+          <div class="d-flex justify-content-start">
+            <img src="../../assets/images/user.png" alt="" />
+            <h6 class="ps-2">{{ item.username }}</h6>
+          </div>
+          <h2>
+            {{ item.title | slice : 0 : 16
+            }}{{ item.title.length > 16 ? "..." : "" }}
+          </h2>
+          <p>
+            {{ item.body | slice : 0 : 130
+            }}{{ item.body.length > 130 ? "..." : "" }}
+          </p>
+          <div class="d-flex justify-content-between pt-3">
+            <i class="fa-solid fa-comment wh-color"> 1</i>
+            <i class="fa-solid fa-heart wh-color"> 0</i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <mat-paginator
+    class="custom-paginator"
+    [length]="posts.length"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 25, 100]"
+    aria-label="Select page"
+    (page)="onPaginatorChange($event)"
+    (initialized)="onPaginatorChange($event)"
+  >
+  </mat-paginator>
+</div>
