@@ -10,21 +10,26 @@ import { PostDetailsComponent } from '../dialogs/post-details/post-details.compo
   styleUrls: ['./posts.component.scss'],
 })
 export class PostsComponent {
-  posts: any[] = [];
-  displayPosts: any[] = [];
-  users: any[] = [];
-  pageSize = 5;
+  posts: any[] = []; // Postlarimizi saxlayacagimiz array
+  displayPosts: any[] = []; // Pagination-da gorunecek postlari saxlayan array
+  users: any[] = []; // userleri saxlayan array
+  pageSize = 5; // Default sehifeye ilk girisde gorunecek post sayi
+
   constructor(public dialog: MatDialog, private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.apiService.getUsers().subscribe((data) => {
-      this.users = data;
+      this.users = data; // Api-den user datasini elde etdiyimiz hisse
+      // Apiden postlari elde etdiyimiz request
       this.apiService.getPosts().subscribe((response) => {
+        // userId esasen postlari map edirik
         this.posts = response.map((x) => {
+          // Elde etdiyimiz userId-lere esasen find metodu ile postlarimiz saxlayan arrayimize uygun userName elave etdiyimiz hisse
           x.username =
             this.users.find((user) => x.userId == user.id)?.name || '';
           return x;
         });
+        // Sehife ilk acilanda paginationa esasen gorunecek datanin hesablanma alqoritmi
         this.displayPosts = this.posts.slice(
           0 * this.pageSize,
           (0 + 1) * this.pageSize
@@ -33,12 +38,12 @@ export class PostsComponent {
     });
   }
 
-  openDialog(postId:number): void {
-    const selectedPost = this.posts.find(post => post.id === postId);
-    
+  openDialog(postId: number): void {
+    const selectedPost = this.posts.find((post) => post.id === postId); // openDialog eventi ile oturulen id esasen uygun postun elde edilmesi
+
     const dialogRef = this.dialog.open(PostDetailsComponent, {
       width: '550px',
-      data: { post: selectedPost },
+      data: { post: selectedPost }, // Tapilmis postun datasinin dialogumuz icerisine oturulduyu hisse
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -47,13 +52,15 @@ export class PostsComponent {
   }
 
   onPaginatorChange(ev: any) {
-    let { previousPageIndex, pageIndex, pageSize, length } = ev;
+    let { previousPageIndex, pageIndex, pageSize, length } = ev; // Object destructuring
+    // Paginationun data ile isleme alqoritmi
     this.displayPosts = this.posts.slice(
       pageIndex * pageSize,
       (pageIndex + 1) * pageSize
     );
   }
 
+  // Paginationa esasen ekranda gorunen datanin indeksini elde etme metodu
   getItemIndex(item: any) {
     return (
       this.posts.indexOf(
